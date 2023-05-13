@@ -1,21 +1,4 @@
-//create an express instance that takes in a config object
-//and then starts the server
-//
-// Path: server.js
-// Compare this snippet from index.js:
-// const Server = require('./server');
-// const Config = require('./config');
-//
-// const server = new Server(Config);
-// server.start();
-
 const express = require('express');
-// const cors = require('cors');
-// const logger = require('morgan');
-// const mongoose = require('mongoose');
-
-// const routes = require('./routes');
-
 class Server {
   app = null;
   config = null;
@@ -27,13 +10,15 @@ class Server {
 
   start() {
     this.setupExpress();
-    // this.setupRoutes();
-    // this.connectMongo();
+    this.setupRoutes();
+    this.connectMongo();
     this.startListening();
   }
   
   setupExpress() {
+    // const logger = require('morgan');
     // this.app.use(logger('dev'));
+    // const cors = require('cors');
     // this.app.use(cors());
     
     this.app.use(express.json()) 
@@ -41,11 +26,17 @@ class Server {
   }
 
   setupRoutes() {
-    this.app.use('/api', routes);
+    const routes = require('../routes');
+    this.app.use('/', routes);
   }
 
-  connectMongo() {
-    mongoose.connect(this.config.mongoUrl, { useNewUrlParser: true });
+  async connectMongo() {
+    const { MongoClient } = require('mongodb');
+    const client = new MongoClient(this.config.DB_URI, { useNewUrlParser: true });
+    
+    await client.connect();
+    this.app.db = client.db('test');
+    console.log('MongoDB connected.');
   }
 
   startListening() {
@@ -56,9 +47,3 @@ class Server {
 }
 
 module.exports = Server;
-
-
-
-
-
-
