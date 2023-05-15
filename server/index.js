@@ -16,8 +16,8 @@ class Server {
   }
   
   setupExpress() {
-    // const logger = require('morgan');
-    // this.app.use(logger('dev'));
+    const logger = require('morgan');
+    this.app.use(logger('dev'));
     // const cors = require('cors');
     // this.app.use(cors());
     
@@ -32,10 +32,10 @@ class Server {
 
   async connectMongo() {
     const { MongoClient } = require('mongodb');
-    const client = new MongoClient(this.config.DB_URI, { useNewUrlParser: true });
+    const client = new MongoClient(this.config.db.uri, { useNewUrlParser: true });
     
     await client.connect();
-    this.app.db = client.db('test');
+    this.app.db = client.db(this.config.db.name);
     console.log('MongoDB connected.');
   }
 
