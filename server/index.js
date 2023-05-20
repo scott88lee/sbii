@@ -14,15 +14,28 @@ class Server {
     this.connectMongo();
     this.startListening();
   }
-  
+
   setupExpress() {
     const logger = require('morgan');
     this.app.use(logger('dev'));
     // const cors = require('cors');
     // this.app.use(cors());
+
+    this.app.use(express.json())
+    this.app.use(express.urlencoded({ extended: false }));
     
-    this.app.use(express.json()) 
-    this.app.use(express.urlencoded({extended: false}));
+    // View engine setup
+    const { engine } = require('express-handlebars');
+    const hbsConfig = {
+      // layoutsDir: __dirname + '../views/layouts',
+      layoutsDir: './views/layouts',
+      extname: 'hbs',
+      defaultLayout: 'default',
+      helpers: require('../views/helpers')
+    }
+
+    this.app.set('view engine', 'hbs');
+    this.app.engine('hbs', engine(hbsConfig));
   }
 
   setupRoutes() {
@@ -33,7 +46,7 @@ class Server {
   async connectMongo() {
     const { MongoClient } = require('mongodb');
     const client = new MongoClient(this.config.db.uri, { useNewUrlParser: true });
-    
+
     await client.connect();
     this.app.db = client.db(this.config.db.name);
     console.log('MongoDB connected.');

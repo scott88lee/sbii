@@ -5,8 +5,8 @@ const router = express.Router();
 router.use('/users', require('./users'));
 
 router.get('/', (req, res) => {
-  req.app.db.collection('test').insertOne({name: 'asdasdasdad '});
-  res.send('Hello from routes');
+  // req.app.db.collection('test').insertOne({name: 'asdasdasdad '});
+  res.render('index', { thing: 'Express' })
 });
 
 //404 error
