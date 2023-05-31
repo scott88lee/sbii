@@ -1,4 +1,8 @@
 const express = require('express');
+const passport = require('passport');
+const cookieSession = require('cookie-session');
+require('./initPassport');
+
 class Server {
   app = null;
   config = null;
@@ -36,6 +40,14 @@ class Server {
 
     this.app.set('view engine', 'hbs');
     this.app.engine('hbs', engine(hbsConfig));
+
+    // Setup passport
+    this.app.use(cookieSession({
+      name: 'google-auth-session',
+      keys: ['key1', 'key2']
+    }))
+    this.app.use(passport.initialize());
+    this.app.use(passport.session());
   }
 
   setupRoutes() {
